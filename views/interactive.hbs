@@ -1,0 +1,56 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark py-4">
+    <div class="container-fluid d-flex justify-content-evenly">
+        <button class="btn btn-dark"> Live Cell Color: <input type="color" id="alive" /></button>
+        <button class="btn btn-dark"> Dead Cell Color: <input type="color" id="dead" /></button>
+        <button type="button" class="btn btn-info" id="randomizeGrid">Randomize</button>
+        <div class="dropdown">
+            <button class="btn btn-info dropdown-toggle" type="button" id="dropdownMenuButton1"
+                data-bs-toggle="dropdown" aria-expanded="false">
+                Render Interval
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                <div class="d-flex flex-row justify-content-evenly">
+                    <h6 class="mx-3 mt-1">Slower</h6>
+                    <input class="mx-2" type="range" name="render-interval" id="interval" value="500" min="50"
+                        max="1000" />
+                    <h6 class="mx-3 mt-1">Faster</h6>
+                </div>
+            </div>
+        </div>
+
+
+        <button type="button" class="btn btn-info" id="pausePlay">
+            <img src="play.png" alt="#" width="30" height="25">
+        </button>
+
+        <div class="dropdown">
+            <button class="btn btn-info dropdown-toggle" type="button" id="dropdownMenuButton1"
+                data-bs-toggle="dropdown" aria-expanded="false">
+                Presets
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                <li class="dropdown-item" id="chaos">Maximum Chaos</li>
+                <li class="dropdown-item" id="gosperGlider">Gosper's Glider Gun</li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container-sm">
+    <div class="collapse" id="collapseExample">
+        <div class="d-flex justify-content-center my-4">
+            <form class="range-field w-75">
+                <input id="reversedRange" class="border-0" type="range" min="0" max="200" />
+            </form>
+            <span class="font-weight-bold text-primary ml-2 mt-1 valueSpan"></span>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid d-flex justify-content-evenly align-items-center mt-5">
+    <canvas id="canvas" />
+</div>
+
+{{> quadrant}}
+{{> tree}}
+{{> canvas}}

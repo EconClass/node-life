@@ -1,0 +1,123 @@
+<script>
+
+    class Boundary {
+        constructor(x, y, size) {
+            this.x = x;
+            this.y = y;
+            this.size = size;
+        };
+
+
+        // Returns true if the coordinates passed are within its bounds
+        contains(xPos, yPos) {
+            const { x, y, size } = this;
+            return (
+                xPos >= x &&
+                xPos < x + size &&
+                yPos >= y &&
+                yPos < y + size
+            );
+        };
+    };
+
+
+    //==============================================================================================
+    class Quad {
+        constructor(x, y, size, min, max, p) {
+            this.max = max;
+            this.min = min;
+            this.quadrants = null;
+            this.area = new Boundary(x, y, size);
+            this.isAlive = false;
+            this.isDivided = false;
+            this.parent = p || null;
+        };
+
+        getNeighbors() {
+            let [left, right, lower, upper] = [
+                this.area.x - this.min, // left x coord from current cell
+                this.area.x + this.min, // right x coord from current cell
+                this.area.y + this.min, // lower y coord from current cell
+                this.area.y - this.min, // upper y coord from current cell
+            ];
+
+            // This makes the board a finite field where "leaving" to the left
+            // brings it back to the right and vice versa...
+            if (left < 0) { left = this.max - this.min; }
+            else if (right >= this.max) { right = 0; }
+
+            // Also leaving from the top brings you back to the bottom and vice versa
+            if (upper < 0) { upper = this.max - this.min; }
+            else if (lower >= this.max) { lower = 0; }
+
+            return [
+                `${this.area.x},${upper}`, // upper
+                `${this.area.x},${lower}`, // lower
+                `${right},${this.area.y}`, // right
+                `${left},${this.area.y}`, // left
+                `${right},${upper}`, // upper right
+                `${right},${lower}`, // lower right
+                `${left},${upper}`, // upper left
+                `${left},${lower}`, // lower left
+            ];
+        };
+
+
+        // Create Live Cell at x, y position
+        insert(x, y) {
+            if (this.area.size <= this.min && this.area.contains(x, y)) {
+                this.isAlive = true;
+                return;
+            };
+
+            // Create subdivisions if possible and try the insert again
+            if (this.area.size > this.min) {
+                if (!this.isDivided) {
+                    this.subdivide();
+                };
+
+                // Recursively find the proper quadrant to insert cell to
+                const quad = this.whichQuad(x, y);
+                if (quad === null) {
+                    return
+                }
+                quad.insert(x, y);
+            };
+        };
+
+
+
+        // Return the quadrant a given point belongs to
+        whichQuad(x, y) {
+            if (!this.quadrants) {
+                throw new Error("This is NOT divided!");
+            };
+
+            for (const quad of this.quadrants) {
+                if (quad.area.contains(x, y)) {
+                    return quad;
+                }
+            }
+            return null;
+        };
+
+
+        // Divide the tree into 4 subdivisions of quadtrees
+        subdivide() {
+            if (this.area.size <= this.min) {
+                throw new RangeError("Cannot subdivide past minimum quadrant size!");
+            }
+
+            const { x, y, size } = this.area;
+            const offset = size >> 1;
+            this.isDivided = true;
+            this.quadrants = [
+                new Quad(x + offset, y, offset, this.min, this.max, this), // NE
+                new Quad(x, y, offset, this.min, this.max, this), // NW
+                new Quad(x, y + offset, offset, this.min, this.max, this), // SW
+                new Quad(x + offset, y + offset, offset, this.min, this.max, this), // SE
+            ];
+        };
+    };
+
+</script>

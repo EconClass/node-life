@@ -1,0 +1,60 @@
+<div class="p-5 mb-4 bg-dark text-light rounded-3">
+    <div class="container-fluid py-5 d-flex flex-row justify-content-center">
+        <h1>Welcome To Another Conway's Game of Life Visualizer</h1>
+    </div>
+</div>
+
+
+<div class="card container-md bg-dark d-flex flex-row justify-content-center">
+    <div class="container d-flex flex-column py-5 text-light">
+        <h2 class="card-title mt-5 mx-4">Conway's Game of Life</h2>
+        <h3 class="card-body">
+            The Game of Life is a type of cellular automaton.
+            In other words it's simulation of what it's like to be in a 2D world, but with a twist!
+            In this 2D world that's represented by a grid, each cell represents a living creature.
+            To survive, these creatures don't care about finding water, food or shelter like us beings in the 3D world.
+            Instead these creatures only need to follow certain rules. For Conway's Game of Life the rules are:
+        </h3>
+        <h3 class="card-body">1) Any live cell with two or three neighbors survives.</h3>
+
+        <h3 class="card-body">2) Any dead cell with EXACTLY three live neighbors becomes a live cell.</h3>
+
+        <h3 class="card-body">3) All other cells will die or stay dead.</h3>
+
+        <a href="interactive" type="button" class="btn btn-info btn-lg m-5">TRY VISUALIZER</a>
+
+        <h2 class="card-title mt-5 mx-4">The Grid</h2>
+        <h3 class="card-body">
+            If you took a look at the Visualizer already you'll notice that the grid I used doesn't look like a typical
+            grid.
+            That's because the Visualizer is showing the concept behind a data structure called a Quadtree.
+            Here's how a typical Game of Life is typically shown like this:
+        </h3>
+        <div class="container d-flex flex-row justify-content-center">
+            <img class="m-5" width="500" height="500" src="https://images.thoughtbot.com/codecation/gol.gif">
+        </div>
+        <h3 class="card-body mt-5">
+            However, if you notice there's a good amount of the grid that's in white all the time.
+            This is because most of the time there won't be enough living cells near them for them to revive.
+            This doesn't mean nothing happens though, in fact the computer will keep drawing the same dead cells over
+            and over.
+        </h3>
+
+        <h2 class="card-title mt-5 mx-4">An Alternative</h2>
+
+        <h3 class="card-body">
+            Quadtrees are a solution to that problem, in that they only need to redraw the parts that change.
+            And in the case that they do need to change, it will take the least amount of effort to draw.
+            Which is why for the Visualizer on this site, you saw different sized squares.
+            For a computer, the difference between drawing a small square and a big square is negligible, in the end
+            what matters more is how many squares were drawn.
+        </h3>
+
+        <h3 class="card-body">
+            Quadtrees shine as data structures in situations like this as they greatly reduce the number of "drawings"
+            or renders it needs to do by a substantial amount.
+        </h3>
+
+        <a href="https://en.wikipedia.org/wiki/Quadtree" class="btn btn-info btn-lg m-5"> MORE ABOUT QUADTREES</a>
+    </div>
+</div>

@@ -1,0 +1,169 @@
+<script>
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    const initialWidth = 1024
+    ctx.canvas.width = initialWidth
+    ctx.canvas.height = initialWidth
+
+    class CanvasInterface {
+        constructor() {
+            this.liveColor = "#2c3b9a";
+            this.deadColor = "#838fdc";
+            this.renderInterval = 100;
+            this.cellSize = initialWidth >> 6
+            this.tree = new TreeOfLife(0, 0, initialWidth, this.cellSize);
+            this.playing = true;
+        }
+
+        pausePlay = () => {
+            this.playing = !this.playing;
+            console.log(this.cellSize)
+            if (this.playing) {
+                this.loop();
+            }
+        };
+
+        renderQuads = () => {
+            ctx.clearRect(0, 0, initialWidth, initialWidth);
+            const quads = this.tree.currentBoard();
+
+            quads.forEach((quad) => {
+                const { x, y, size } = quad.area;
+                ctx.fillStyle = this.deadColor;
+                if (quad.isAlive) {
+                    ctx.fillStyle = this.liveColor;
+                    ctx.fillRect(x, y, size, size);
+                };
+                ctx.fillRect(x, y, size, size);
+                ctx.beginPath();
+                ctx.rect(x, y, size, size);
+                ctx.stroke();
+            });
+        };
+
+        renderLife = () => {
+            this.tree.updateGen();
+            this.tree.makeNextGen();
+            this.renderQuads();
+        };
+
+        randomize = (size) => {
+            const factor = initialWidth - this.cellSize
+            const nums = [...new Array(size)]
+                .map(() => {
+                    const x = ((Math.random() * factor) << 4) >> 4
+                    const y = ((Math.random() * factor) << 4) >> 4
+                    return [x, y]
+                })
+            this.tree.root.quadrants = null;
+            this.tree.root.isDivided = false;
+            this.tree.currentGen = new Map();
+            for (let i = 0; i < size; i++) {
+                this.tree.insertCell(nums[i][0], nums[i][1]);
+            }
+
+            this.renderQuads();
+        };
+
+        loop = () => {
+            this.renderLife()
+            if (!this.playing) {
+                return;
+            } else {
+                setTimeout(this.loop, this.renderInterval);
+            }
+        };
+    };
+
+
+    function randomArray(length, max) {
+        return [...new Array(length)]
+            .map(() => Math.round(Math.random() * max - this.cellSize));
+    }
+
+    const uiInterface = new CanvasInterface()
+
+    // Insert cell at mouse location on canvas
+    canvas.addEventListener("click", (e) => {
+        const offset = canvas.getBoundingClientRect();
+        const x = e.clientX - offset.left;
+        const y = e.clientY - offset.top;
+
+        uiInterface.insertCell(x, y);
+        uiInterface.renderQuads();
+    });
+
+
+    // Button interactions
+    document.getElementById('interval').addEventListener('input', (e) => {
+        uiInterface.renderInterval = e.target.value
+    })
+    document.getElementById('randomizeGrid').addEventListener('click', () => uiInterface.randomize(500))
+    document.getElementById('pausePlay').addEventListener('click', () => uiInterface.pausePlay())
+    document.getElementById('alive').addEventListener('input', (e) => {
+        uiInterface.liveColor = e.target.value
+    })
+    document.getElementById('dead').addEventListener('input', (e) => {
+        uiInterface.deadColor = e.target.value
+    })
+    document.getElementById('gosperGlider').addEventListener('click', () => {
+        uiInterface.tree.root.quadrants = null;
+        uiInterface.tree.root.isDivided = false;
+        uiInterface.tree.currentGen = new Map();
+        const [x, y] = [272, 160]
+        const incr = uiInterface.cellSize
+        const cells = [
+            [x, y],
+            [x, y + incr],
+            [x + incr, y],
+            [x + incr, y + incr],
+            [x + incr * 9, y],
+            [x + incr * 9, y + incr],
+            [x + incr * 9, y + incr * 2],
+            [x + incr * 10, y - incr],
+            [x + incr * 10, y + incr * 3],
+            [x + incr * 11, y - incr * 2],
+            [x + incr * 11, y + incr * 4],
+            [x + incr * 12, y - incr * 2],
+            [x + incr * 12, y + incr * 4],
+            [x + incr * 13, y + incr],
+            [x + incr * 14, y - incr],
+            [x + incr * 14, y + incr * 3],
+            [x + incr * 15, y],
+            [x + incr * 15, y + incr],
+            [x + incr * 15, y + incr * 2],
+            [x + incr * 16, y + incr],
+            [x + incr * 19, y],
+            [x + incr * 19, y - incr],
+            [x + incr * 19, y - incr * 2],
+            [x + incr * 20, y],
+            [x + incr * 20, y - incr],
+            [x + incr * 20, y - incr * 2],
+            [x + incr * 21, y - incr * 3],
+            [x + incr * 21, y + incr],
+            [x + incr * 23, y - incr * 3],
+            [x + incr * 23, y - incr * 4],
+            [x + incr * 23, y + incr],
+            [x + incr * 23, y + incr * 2],
+            [x + incr * 33, y - incr],
+            [x + incr * 33, y - incr * 2],
+            [x + incr * 34, y - incr],
+            [x + incr * 34, y - incr * 2]
+        ]
+        for (const [i, j] of cells) {
+            uiInterface.tree.insertCell(i, j);
+        }
+        uiInterface.renderQuads();
+    })
+    document.getElementById('chaos').addEventListener('click', () => uiInterface.randomize(2000))
+
+    canvas.addEventListener("click", (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        uiInterface.tree.insertCell(x, y);
+        uiInterface.renderQuads();
+    });
+
+    uiInterface.loop()
+</script>
